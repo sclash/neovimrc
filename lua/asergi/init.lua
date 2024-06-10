@@ -5,8 +5,7 @@ vim.wo.relativenumber = true
 vim.opt.scrolloff = 8
 vim.opt.updatetime = 50
 --vim.opt.termguicolors = true
-vim.api.nvim_set_hl(0, "Normal", { bg = "black" })
-
+-- vim.api.nvim_set_hl(0, "Normal", { bg = "black" })
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then

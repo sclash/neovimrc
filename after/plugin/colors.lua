@@ -27,7 +27,7 @@ require('kanagawa').setup({
 
 require('onedark').setup({
 	term_colors = false,
-	transparent = false,
+	transparent = true,
 	style = 'warmer',
 	colors = {
 	},
@@ -37,15 +37,15 @@ require('onedark').setup({
 })
 
 require('catppuccin').setup({
-	-- flavour = "mocha";
-	transparent_background = true,
+	flavour = "mocha";
+	transparent_background = false,
 	color_overrides = {
 		mocha = {
 			-- base = "#212120", -- VSCode
 			-- base = "#0B0B09",
 			-- base = "#161313",
-			-- base = "#1A1818",
-			base = "#171515",
+			base = "#1A1818",
+			-- base = "#171515",
 			mantle = "#000000",
 			crust = "#000000"
 		}
@@ -53,8 +53,8 @@ require('catppuccin').setup({
 })
 -- require('onedark').load()
 -- vim.cmd("colorscheme kanagawa")
--- vim.cmd("colorscheme onedark")
-vim.cmd("colorscheme catppuccin-mocha")
+vim.cmd("colorscheme onedark")
+-- vim.cmd("colorscheme catppuccin")
 --
 -- vim.api.nvim_set_hl(0, "Normal", {bg = "#1e1e21"})
 -- vim.api.nvim_set_hl(0, "Normal", {bg = "#151517"})
