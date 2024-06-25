@@ -28,7 +28,7 @@ require('kanagawa').setup({
 require('onedark').setup({
 	term_colors = false,
 	transparent = true,
-	style = 'warmer',
+	style = 'warm',
 	colors = {
 	},
 	highlights = {
