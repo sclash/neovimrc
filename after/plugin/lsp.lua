@@ -27,7 +27,7 @@ require('mason-tool-installer').setup({
 	}
 })
 require('mason-lspconfig').setup({
-	ensure_installed = { 'bashls', 'tsserver', 'rust_analyzer', 'pyright', 'html', 'volar', 'clangd', 'astro', 'lua_ls',
+	ensure_installed = { 'bashls', 'ts_ls', 'rust_analyzer', 'pyright', 'html', 'volar', 'clangd', 'astro', 'lua_ls',
 		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'marksman', 'sqlls', 'texlab'},
 	handlers = {
 		lsp_zero.default_setup,

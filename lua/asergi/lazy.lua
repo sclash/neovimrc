@@ -57,10 +57,18 @@ require('lazy').setup({
 		ft = { "markdown" },
 		build = function() vim.fn["mkdp#util#install"]() end,
 	},
-
 	{ 'tpope/vim-surround' },
 	{ 'preservim/tagbar' },
-
+	{ 'simrat39/symbols-outline.nvim' },
+	{
+		"SmiteshP/nvim-navbuddy",
+		dependencies = {
+			"neovim/nvim-lspconfig",
+			"SmiteshP/nvim-navic",
+			"MunifTanjim/nui.nvim",
+		},
+		opts = { lsp = { auto_attach = true } }
+	},
 	{
 		'nvim-lualine/lualine.nvim',
 		dependencies = { 'nvim-tree/nvim-web-devicons' }
@@ -85,10 +93,10 @@ require('lazy').setup({
 	-- 	}
 	-- },
 	{
-	  'stevearc/oil.nvim',
-	  -- opts = {},
-	  -- Optional dependencies
-	  dependencies = { "nvim-tree/nvim-web-devicons" },
+		'stevearc/oil.nvim',
+		-- opts = {},
+		-- Optional dependencies
+		dependencies = { "nvim-tree/nvim-web-devicons" },
 	}
 
 })
