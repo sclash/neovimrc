@@ -75,6 +75,11 @@ require('lazy').setup({
 	},
 
 	{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
+	{
+		"folke/trouble.nvim",
+		opts = {},
+		cmd = "Trouble",
+	},
 
 	-- noice.nvim
 	-- {
