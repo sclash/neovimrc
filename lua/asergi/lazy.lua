@@ -58,6 +58,12 @@ require('lazy').setup({
 		build = function() vim.fn["mkdp#util#install"]() end,
 	},
 	{ 'tpope/vim-surround' },
+	{
+		'ThePrimeagen/harpoon',
+		branch = 'harpoon2',
+		dependencies = { 'nvim-lua/plenary.nvim' }
+
+	},
 	{ 'preservim/tagbar' },
 	{ 'simrat39/symbols-outline.nvim' },
 	{
