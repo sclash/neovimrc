@@ -18,6 +18,26 @@ end)
 -- to learn how to use mason.nvim with lsp-zero
 -- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guides/integrate-with-mason-nvim.md
 --
+--
+
+
+
+-- lsp config for mojo
+-- https://github.com/neovim/nvim-lspconfig/blob/master/lua/lspconfig/configs/mojo.lua
+-- https://forum.modular.com/t/mojo-lsp-setup-for-neovim/501
+-- In order to check installation guide :help lspconfig-all
+-- Be sure to have built magic + Mojo, refer to the official guide: https://docs.modular.com/mojo/manual/get-started/
+require('lspconfig').mojo.setup({
+  default_config = {
+    cmd = { 'mojo-lsp-server' },
+    filetypes = { 'mojo' },
+    root_dir = function(fname)
+      return vim.fs.dirname(vim.fs.find('.git', { path = fname, upward = true })[1])
+    end,
+    single_file_support = true,
+  },
+})
+
 require('mason').setup({})
 
 require('mason-tool-installer').setup({
@@ -28,7 +48,7 @@ require('mason-tool-installer').setup({
 })
 require('mason-lspconfig').setup({
 	ensure_installed = { 'bashls', 'ts_ls', 'rust_analyzer', 'pyright', 'html', 'volar', 'clangd', 'astro', 'lua_ls',
-		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'marksman', 'sqlls', 'texlab'},
+		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'marksman', 'sqlls', 'texlab', },
 	handlers = {
 		lsp_zero.default_setup,
 		lua_ls = function()
