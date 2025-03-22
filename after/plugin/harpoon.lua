@@ -35,9 +35,23 @@ local function toggle_telescope(harpoon_files)
 	}):find()
 end
 
-vim.keymap.set("n", "<C-t>", function() toggle_telescope(harpoon:list()) end,
-	{ desc = "Open harpoon window" })
+local function toggle_telescope_grep(harpoon_files)
+	local file_paths = {}
+	for _, item in ipairs(harpoon_files.items) do
+		table.insert(file_paths, item.value)
+	end
 
+	require("telescope.builtin").live_grep({
+		prompt_title = "Harpoon GREP",
+		search_dirs = file_paths,
+	})
+end
+
+vim.keymap.set("n", "<C-t>", function() toggle_telescope(harpoon:list()) end,
+	{ desc = "Open telescope for harpoon window" })
+
+vim.keymap.set("n", "<leader>tg", function() toggle_telescope_grep(harpoon:list()) end,
+	{ desc = "Open telescope GREP harpoon window" })
 -- harpoon:extend(extensions.builtins.navigate_with_number());
 
 

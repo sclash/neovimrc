@@ -64,8 +64,8 @@ require('lazy').setup({
 		dependencies = { 'nvim-lua/plenary.nvim' }
 
 	},
-	{ 'preservim/tagbar' },
-	{ 'simrat39/symbols-outline.nvim' },
+	-- { 'preservim/tagbar' },
+	-- { 'simrat39/symbols-outline.nvim' },
 	{
 		"SmiteshP/nvim-navbuddy",
 		dependencies = {
