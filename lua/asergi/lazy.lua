@@ -64,7 +64,7 @@ require('lazy').setup({
 		dependencies = { 'nvim-lua/plenary.nvim' }
 
 	},
-	-- { 'preservim/tagbar' },
+	{ 'preservim/tagbar' },
 	-- { 'simrat39/symbols-outline.nvim' },
 	{
 		"SmiteshP/nvim-navbuddy",
@@ -108,6 +108,7 @@ require('lazy').setup({
 		-- opts = {},
 		-- Optional dependencies
 		dependencies = { "nvim-tree/nvim-web-devicons" },
-	}
-
+	},
+	-- {"mfussenegger/nvim-dap"},
+	{ "rcarriga/nvim-dap-ui", dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" } },
 })
