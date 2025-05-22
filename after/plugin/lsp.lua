@@ -39,6 +39,12 @@ require('lspconfig').mojo.setup({
 	},
 })
 
+-- require('lspconfig').vuels.setup({
+-- 	default_config = {
+-- 		filetypes = {'vue'},
+-- 	}
+-- })
+
 
 -- require("lspconfig").emmet_language_server.setup({
 -- 	filetypes = { "typescript", "javascript", "vue" },
@@ -52,16 +58,16 @@ require('lspconfig').mojo.setup({
 -- 	filetypes = { "typescript", "javascript", "vue", "html" },
 --
 -- })
-require("lspconfig").volar.setup {
-	-- add filetypes for typescript, javascript and vue
-	filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
-	init_options = {
-		vue = {
-			-- disable hybrid mode
-			hybridMode = false,
-		},
-	},
-}
+-- require("lspconfig").volar.setup {
+-- 	-- add filetypes for typescript, javascript and vue
+-- 	filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+-- 	init_options = {
+-- 		vue = {
+-- 			-- disable hybrid mode
+-- 			hybridMode = false,
+-- 		},
+-- 	},
+-- }
 
 -- require("lspconfig").volar.setup({
 -- 	init_options = {
@@ -156,7 +162,7 @@ require('mason-tool-installer').setup({
 	}
 })
 require('mason-lspconfig').setup({
-	ensure_installed = { 'bashls', 'ts_ls', 'rust_analyzer', 'pyright', 'html', 'volar', 'htmx', 'clangd', 'astro',
+	ensure_installed = { 'bashls', 'ts_ls', 'rust_analyzer', 'pyright', 'html', 'vuels', 'htmx', 'clangd', 'astro',
 		'lua_ls',
 		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'marksman', 'sqlls',
 		'texlab', 'emmet_language_server' },
