@@ -143,7 +143,7 @@ require('lazy').setup({
 				['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
 				['<C-e>'] = { 'hide' },
 				-- ['<C-y>'] = { 'select_and_accept' },
-				['<Enter>'] = { 'select_and_accept' },
+				['<C-Enter>'] = { 'select_and_accept' },
 
 				['<Up>'] = { 'select_prev', 'fallback' },
 				['<Down>'] = { 'select_next', 'fallback' },
