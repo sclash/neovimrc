@@ -52,8 +52,9 @@ require('catppuccin').setup({
 	}
 })
 -- require('onedark').load()
--- vim.cmd("colorscheme kanagawa")
 vim.cmd("colorscheme onedark")
+-- vim.cmd("colorscheme rose-pine")
+-- vim.cmd("colorscheme kanagawa")
 -- vim.cmd("colorscheme catppuccin")
 --
 -- vim.api.nvim_set_hl(0, "Normal", {bg = "#1e1e21"})
