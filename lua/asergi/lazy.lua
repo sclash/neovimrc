@@ -146,6 +146,10 @@ require('lazy').setup({
 	},
 	-- {"mfussenegger/nvim-dap"},
 	{ "rcarriga/nvim-dap-ui",                dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" } },
+
+	-- vim-lsp (for sqls LSP)
+	{ 'prabirshrestha/vim-lsp' },
+
 	-- blink.cmp nvim
 	{
 		'saghen/blink.cmp',
