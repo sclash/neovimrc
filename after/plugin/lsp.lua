@@ -28,7 +28,8 @@ end)
 -- https://forum.modular.com/t/mojo-lsp-setup-for-neovim/501
 -- In order to check installation guide :help lspconfig-all
 -- Be sure to have built magic + Mojo, refer to the official guide: https://docs.modular.com/mojo/manual/get-started/
-require('lspconfig').mojo.setup({
+-- require('lspconfig').mojo.setup({
+vim.lsp.config("mojo",{
 	default_config = {
 		cmd = { 'mojo-lsp-server' },
 		filetypes = { 'mojo' },
@@ -162,42 +163,78 @@ require('mason-tool-installer').setup({
 	}
 })
 require('mason-lspconfig').setup({
-	ensure_installed = { 'bashls', 'ts_ls', 'rust_analyzer', 'pyright', 'html', 'vuels', 'htmx', 'clangd', 'astro',
+	ensure_installed = { 'bashls',  'vtsls', 'rust_analyzer', 'pyright', 'html', 'vuels', 'vue_ls', 'htmx', 'clangd', 'astro',
 		'lua_ls',
 		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'marksman', 'sqlls',
-		'texlab', 'emmet_language_server' },
+		'texlab', 'emmet_language_server', 'asm_lsp','sqls' },
 	handlers = {
 		lsp_zero.default_setup,
 		lua_ls = function()
 			local lua_opts = lsp_zero.nvim_lua_ls()
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
 			-- require('lspconfig').lua_ls.setup(lua_opts)
-			require('lspconfig').lua_ls.setup{ options = lua_opts, capabilities = capabilities }
+			-- require('lspconfig').lua_ls.setup { options = lua_opts, capabilities = capabilities }
+			vim.lsp.config("lua_ls",{ options = lua_opts, capabilities = capabilities })
 		end,
 	}
 })
 
--- local cmp = require('cmp')
--- local cmp_select = { behavior = cmp.SelectBehavior.Select }
---
--- -- this is the function that loads the extra snippets to luasnip
--- -- from rafamadriz/friendly-snippets
--- require('luasnip.loaders.from_vscode').lazy_load()
---
--- cmp.setup({
--- 	sources = {
--- 		{ name = 'path' },
--- 		{ name = 'nvim_lsp' },
--- 		{ name = 'nvim_lua' },
--- 		{ name = 'luasnip', keyword_length = 2 },
--- 		{ name = 'buffer',  keyword_length = 3 },
--- 	},
--- 	formatting = lsp_zero.cmp_format(),
--- 	mapping = cmp.mapping.preset.insert({
--- 		['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
--- 		['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
--- 		-- ['<C-y>'] = cmp.mapping.confirm({ select = true }),
--- 		['<Enter>'] = cmp.mapping.confirm({ select = true }),
--- 		['<C-Space>'] = cmp.mapping.complete(),
--- 	}),
--- })
+
+local vue_language_server_path = vim.fn.expand '$MASON/packages' ..
+'/vue-language-server' .. '/node_modules/@vue/language-server'
+local vue_plugin = {
+	name = '@vue/typescript-plugin',
+	location = vue_language_server_path,
+	languages = { 'vue' },
+	configNamespace = 'typescript',
+}
+local vtsls_config = {
+	settings = {
+		vtsls = {
+			tsserver = {
+				globalPlugins = {
+					vue_plugin,
+				},
+			},
+		},
+	},
+	filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+}
+-- If you are on most recent `nvim-lspconfig`
+local vue_ls_coonfig = {}
+-- If you are not on most recent `nvim-lspconfig` or you want to override
+local vue_ls_config = {
+	on_init = function(client)
+		client.handlers['tsserver/request'] = function(_, result, context)
+			local clients = vim.lsp.get_clients({ bufnr = context.bufnr, name = 'vtsls' })
+			if #clients == 0 then
+				vim.notify('Could not find `vtsls` lsp client, `vue_ls` would not work without it.',
+					vim.log.levels.ERROR)
+				return
+			end
+			local ts_client = clients[1]
+
+			local param = unpack(result)
+			local id, command, payload = unpack(param)
+			ts_client:exec_cmd({
+				title = 'vue_request_forward', -- You can give title anything as it's used to represent a command in the UI, `:h Client:exec_cmd`
+				command = 'typescript.tsserverRequest',
+				arguments = {
+					command,
+					payload,
+				},
+			}, { bufnr = context.bufnr }, function(_, r)
+				local response_data = { { id, r.body } }
+				---@diagnostic disable-next-line: param-type-mismatch
+				client:notify('tsserver/response', response_data)
+			end)
+		end
+	end,
+}
+-- local lspconfig = require('lspconfig')
+-- lspconfig.vtsls.setup(vtsls_config)
+-- lspconfig.vue_ls.setup(vue_ls_config)
+-- nvim 0.11 or above
+vim.lsp.config('vtsls', vtsls_config)
+vim.lsp.config('vue_ls', vue_ls_config)
+vim.lsp.enable({ 'vtsls', 'vue_ls' })
