@@ -166,7 +166,7 @@ require('mason-lspconfig').setup({
 	ensure_installed = { 'bashls',  'vtsls', 'rust_analyzer', 'pyright', 'html', 'vuels', 'vue_ls', 'htmx', 'clangd', 'astro',
 		'lua_ls',
 		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'marksman', 'sqlls',
-		'texlab', 'emmet_language_server', 'asm_lsp','sqls' },
+		'texlab', 'emmet_language_server',  },
 	handlers = {
 		lsp_zero.default_setup,
 		lua_ls = function()
