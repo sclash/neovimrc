@@ -137,7 +137,7 @@ require('lazy').setup({
 		dependencies = { 'nvim-tree/nvim-web-devicons' }
 	},
 
-	{ "lukas-reineke/indent-blankline.nvim", main = "ibl",                                                       opts = {} },
+	{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
 	{
 		"folke/trouble.nvim",
 		opts = {},
@@ -166,8 +166,35 @@ require('lazy').setup({
 		-- Optional dependencies
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 	},
-	-- {"mfussenegger/nvim-dap"},
-	{ "rcarriga/nvim-dap-ui",                dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" } },
+	{
+		"nvim-mini/mini.icons",
+		-- No need to copy this inside `setup()`. Will be used automatically.
+		-- Icon style: 'glyph' or 'ascii'
+		style              = 'glyph',
+
+		-- Customize per category. See `:h MiniIcons.config` for details.
+		default            = {},
+		directory          = {},
+		extension          = {},
+		file               = {},
+		filetype           = {},
+		lsp                = {},
+		os                 = {},
+
+		-- Control which extensions will be considered during "file" resolution
+		use_file_extension = function(ext, file) return true end,
+	},
+
+	{
+		"mfussenegger/nvim-dap",
+		event = "VeryLazy",
+		dependencies = {
+			"rcarriga/nvim-dap-ui",
+			"nvim-neotest/nvim-nio",
+			"jay-babu/mason-nvim-dap.nvim",
+			"theHamsta/nvim-dap-virtual-text",
+		},
+	},
 
 	-- vim-lsp (for sqls LSP)
 	{ 'prabirshrestha/vim-lsp' },

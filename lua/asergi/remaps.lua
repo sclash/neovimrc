@@ -40,5 +40,7 @@ vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
 vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>")
 
+
+
 -- NO IDEA
 --vis.keymap.set("n", "n", "nzzzv")
