@@ -123,35 +123,35 @@ vim.lsp.config("emmet_language_server", {
 -- 	},
 -- })
 
-vim.lsp.config("ts_ls", {
-	init_options = {
-		plugins = {
-			{
-				name = '@vue/typescript-plugin',
-				location = vim.fn.stdpath 'data' ..
-				    '/mason/packages/vue-language-server/node_modules/@vue/language-server',
-				languages = { 'vue' },
-			},
-		},
-	},
-	settings = {
-		typescript = {
-			tsserver = {
-				useSyntaxServer = false,
-			},
-			inlayHints = {
-				includeInlayParameterNameHints = 'all',
-				includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-				includeInlayFunctionParameterTypeHints = true,
-				includeInlayVariableTypeHints = true,
-				includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-				includeInlayPropertyDeclarationTypeHints = true,
-				includeInlayFunctionLikeReturnTypeHints = true,
-				includeInlayEnumMemberValueHints = true,
-			},
-		},
-	},
-})
+-- vim.lsp.config("ts_ls", {
+-- 	init_options = {
+-- 		plugins = {
+-- 			{
+-- 				name = '@vue/typescript-plugin',
+-- 				location = vim.fn.stdpath 'data' ..
+-- 				    '/mason/packages/vue-language-server/node_modules/@vue/language-server',
+-- 				languages = { 'vue' },
+-- 			},
+-- 		},
+-- 	},
+-- 	settings = {
+-- 		typescript = {
+-- 			tsserver = {
+-- 				useSyntaxServer = false,
+-- 			},
+-- 			inlayHints = {
+-- 				includeInlayParameterNameHints = 'all',
+-- 				includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+-- 				includeInlayFunctionParameterTypeHints = true,
+-- 				includeInlayVariableTypeHints = true,
+-- 				includeInlayVariableTypeHintsWhenTypeMatchesName = true,
+-- 				includeInlayPropertyDeclarationTypeHints = true,
+-- 				includeInlayFunctionLikeReturnTypeHints = true,
+-- 				includeInlayEnumMemberValueHints = true,
+-- 			},
+-- 		},
+-- 	},
+-- })
 
 -- require('lspconfig').html.setup {
 -- 	filetypes = { 'html',  'vue' },
@@ -167,7 +167,7 @@ require('mason-tool-installer').setup({
 	}
 })
 require('mason-lspconfig').setup({
-	ensure_installed = { 'ts_ls', 'vue_ls', 'bashls', 'rust_analyzer', 'pyright', 'html', 'clangd', 'astro',
+	ensure_installed = { 'vtsls', 'vue_ls', 'bashls', 'rust_analyzer', 'pyright', 'html', 'clangd', 'astro',
 		'lua_ls', 
 		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'marksman', 'sqlls',
 		'texlab', 'emmet_language_server', },
@@ -188,8 +188,10 @@ require('mason-lspconfig').setup({
 -- For Mason v2,
 -- local vue_language_server_path = vim.fn.expand '$MASON/packages' .. '/vue-language-server' .. '/node_modules/@vue/language-server'
 -- or even
-local vue_language_server_path = vim.fn.stdpath('data');
-
+-- local vue_language_server_path = vim.fn.stdpath('data');
+-- local vue_language_server_path = vim.fs.dirname(vim.fn.exepath("vue-language-server")) ..
+-- "/../lib/language-tools/packages/language-server/node_modules/@vue/typescript-plugin"
+local vue_language_server_path = vim.fn.stdpath('data') .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
 -- IMPORTANT: nvchad users cannot use `$MASON` directly as the option is set to `skip`, see: https://github.com/NvChad/NvChad/blob/29ebe31ea6a4edf351968c76a93285e6e108ea08/lua/nvchad/configs/mason.lua#L4
 
 -- local vue_language_server_path = '/path/to/@vue/language-server'
@@ -224,48 +226,50 @@ local ts_ls_config = {
 
 -- If you are on most recent `nvim-lspconfig`
 local vue_ls_config = {}
+
 -- If you are not on most recent `nvim-lspconfig` or you want to override
-local vue_ls_config = {
-	on_init = function(client)
-		client.handlers['tsserver/request'] = function(_, result, context)
-			local ts_clients = vim.lsp.get_clients({ bufnr = context.bufnr, name = 'ts_ls' })
-			local vtsls_clients = vim.lsp.get_clients({ bufnr = context.bufnr, name = 'vtsls' })
-			local clients = {}
-
-			vim.list_extend(clients, ts_clients)
-			vim.list_extend(clients, vtsls_clients)
-
-			if #clients == 0 then
-				vim.notify(
-				'Could not find `vtsls` or `ts_ls` lsp client, `vue_ls` would not work without it.',
-					vim.log.levels.ERROR)
-				return
-			end
-			local ts_client = clients[1]
-
-			local param = unpack(result)
-			local id, command, payload = unpack(param)
-			ts_client:exec_cmd({
-				title = 'vue_request_forward', -- You can give title anything as it's used to represent a command in the UI, `:h Client:exec_cmd`
-				command = 'typescript.tsserverRequest',
-				arguments = {
-					command,
-					payload,
-				},
-			}, { bufnr = context.bufnr }, function(_, r)
-				local response = r and r.body
-				-- TODO: handle error or response nil here, e.g. logging
-				-- NOTE: Do NOT return if there's an error or no response, just return nil back to the vue_ls to prevent memory leak
-				local response_data = { { id, response } }
-
-				---@diagnostic disable-next-line: param-type-mismatch
-				client:notify('tsserver/response', response_data)
-			end)
-		end
-	end,
-}
+-- local vue_ls_config = {
+-- 	on_init = function(client)
+-- 		client.handlers['tsserver/request'] = function(_, result, context)
+-- 			local ts_clients = vim.lsp.get_clients({ bufnr = context.bufnr, name = 'ts_ls' })
+-- 			local vtsls_clients = vim.lsp.get_clients({ bufnr = context.bufnr, name = 'vtsls' })
+-- 			local clients = {}
+--
+-- 			vim.list_extend(clients, ts_clients)
+-- 			vim.list_extend(clients, vtsls_clients)
+--
+-- 			if #clients == 0 then
+-- 				vim.notify(
+-- 				'Could not find `vtsls` or `ts_ls` lsp client, `vue_ls` would not work without it.',
+-- 					vim.log.levels.ERROR)
+-- 				return
+-- 			end
+-- 			local ts_client = clients[1]
+--
+-- 			local param = unpack(result)
+-- 			local id, command, payload = unpack(param)
+-- 			ts_client:exec_cmd({
+-- 				title = 'vue_request_forward', -- You can give title anything as it's used to represent a command in the UI, `:h Client:exec_cmd`
+-- 				command = 'typescript.tsserverRequest',
+-- 				arguments = {
+-- 					command,
+-- 					payload,
+-- 				},
+-- 			}, { bufnr = context.bufnr }, function(_, r)
+-- 				local response = r and r.body
+-- 				-- TODO: handle error or response nil here, e.g. logging
+-- 				-- NOTE: Do NOT return if there's an error or no response, just return nil back to the vue_ls to prevent memory leak
+-- 				local response_data = { { id, response } }
+--
+-- 				---@diagnostic disable-next-line: param-type-mismatch
+-- 				client:notify('tsserver/response', response_data)
+-- 			end)
+-- 		end
+-- 	end,
+-- }
 -- nvim 0.11 or above
 vim.lsp.config('vtsls', vtsls_config)
 vim.lsp.config('vue_ls', vue_ls_config)
-vim.lsp.config('ts_ls', ts_ls_config)
-vim.lsp.enable({  'vue_ls', 'ts_ls',  }) -- If using `ts_ls` replace `vtsls` to `ts_ls`
+-- vim.lsp.config('ts_ls', ts_ls_config)
+-- vim.lsp.enable({  'vue_ls', 'ts_ls',  }) -- If using `ts_ls` replace `vtsls` to `ts_ls`
+vim.lsp.enable({  'vue_ls', 'vtsls',  }) -- If using `ts_ls` replace `vtsls` to `ts_ls`
