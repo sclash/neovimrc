@@ -35,8 +35,15 @@ vim.keymap.set("n", "<leader>S", [[:%s/\<<C-r><C-w>\>//gI<Left><Left><Left>]])
 
 
 -- format file using the lsp formatter cnfigures (check after/lsp.lua)
-vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
-
+-- vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
+vim.keymap.set('n', '<leader>f', function()
+	vim.lsp.buf.format({
+		filter = function(client)
+			-- Exclude clangd from formatting
+			return client.name ~= 'clangd'
+		end,
+	})
+end)
 
 vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>")
 
