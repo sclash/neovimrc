@@ -7,7 +7,7 @@ local dap_virtual_text = require("nvim-dap-virtual-text")
 dap_virtual_text.setup()
 
 mason_dap.setup({
-	ensure_installed = { "cppdbg", "python", "codelldb", "javascript", "delve" , },
+	ensure_installed = { "cppdbg", "python", "codelldb", "js-debug-adapter", "delve", "bash" },
 	automatic_installation = true,
 	handlers = {
 		function(config)
@@ -16,31 +16,58 @@ mason_dap.setup({
 	},
 })
 
+dap.adapters.codelldb = {
+	type = 'server',
+	port = '${port}',
+	executable = {
+		-- **CRITICAL: Replace this path with the actual location of your codelldb binary**
+		-- If installed via mason, it's usually one of these:
+		command = vim.fn.stdpath('data') .. '/mason/packages/codelldb/extension/adapter/codelldb',
+		-- OR, if using mason's bin shims:
+		-- command = vim.fn.stdpath('data') .. '/mason/bin/codelldb',
+		args = { '--port', '${port}' },
+	},
+}
+
+
 -- Configurations
 dap.configurations = {
 	c = {
 		{
 			name = "Launch file",
-			type = "cppdbg",
+			type = "codelldb",
 			request = "launch",
 			program = function()
 				return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
 			end,
 			cwd = "${workspaceFolder}",
 			stopAtEntry = false,
-			MIMode = "lldb",
 		},
+	},
+
+	zig = {
 		{
-			name = "Attach to lldbserver :1234",
-			type = "cppdbg",
+			name = "Launch file",
+			type = "codelldb",
 			request = "launch",
-			MIMode = "lldb",
-			miDebuggerServerAddress = "localhost:1234",
-			miDebuggerPath = "/usr/bin/lldb",
-			cwd = "${workspaceFolder}",
 			program = function()
 				return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
 			end,
+			cwd = "${workspaceFolder}",
+			stopAtEntry = false,
+		},
+	},
+
+	rust = {
+		{
+			name = "Launch file",
+			type = "codelldb",
+			request = "launch",
+			program = function()
+				return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+			end,
+			cwd = "${workspaceFolder}",
+			stopAtEntry = false,
 		},
 	},
 
@@ -144,6 +171,11 @@ vim.keymap.set("n", "<leader>do", function() require("dap").step_over() end)
 vim.keymap.set("n", "<leader>du", function() require("dap").step_out() end)
 vim.keymap.set("n", "<leader>dr", function() require("dap").repl.open() end)
 vim.keymap.set("n", "<leader>dl", function() require("dap").run_last() end)
-vim.keymap.set("n", "<leader>dq", function() require("dap").terminate() require("dapui").close() require("nvim-dap-virtual-text").toggle() end)
+vim.keymap.set("n", "<leader>dq",
+	function()
+		require("dap").terminate()
+		require("dapui").close()
+		require("nvim-dap-virtual-text").toggle()
+	end)
 vim.keymap.set("n", "<leader>db", function() require("dap").list_breakpoints() end)
 vim.keymap.set("n", "<leader>de", function() require("dap").set_exception_breakpoints() end)
