@@ -168,8 +168,8 @@ require('mason-tool-installer').setup({
 })
 require('mason-lspconfig').setup({
 	ensure_installed = { 'vtsls', 'vue_ls', 'bashls', 'rust_analyzer', 'pyright', 'html', 'clangd', 'astro',
-		'lua_ls', 
-		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'marksman', 'sqlls',
+		'lua_ls',
+		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'marksman',
 		'texlab', 'emmet_language_server', },
 	handlers = {
 		lsp_zero.default_setup,
