@@ -22,6 +22,8 @@ require('lazy').setup({
 		}
 	},
 
+	{ 'sindrets/diffview.nvim' },
+
 	-- FUNDAMENTAL
 	{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
 	{
@@ -68,8 +70,8 @@ require('lazy').setup({
 	--THEMES
 	{ "rebelot/kanagawa.nvim" },
 	{ 'navarasu/onedark.nvim' },
-	{ 'catppuccin/nvim',                 name = 'catpuccin', priority = 1000 },
-	{ 'rose-pine/nvim',                  name = 'rose-pine' },
+	{ 'catppuccin/nvim',      name = 'catpuccin', priority = 1000 },
+	{ 'rose-pine/nvim',       name = 'rose-pine' },
 
 	-- file system navigator
 	{
