@@ -23,7 +23,7 @@ require('lazy').setup({
 	},
 	{ 'brenoprata10/nvim-highlight-colors' },
 	{ 'sindrets/diffview.nvim' },
-
+	{"lewis6991/gitsigns.nvim"},
 	-- FUNDAMENTAL
 	{ "nvim-treesitter/nvim-treesitter",   build = ":TSUpdate" },
 	{
