@@ -23,13 +23,13 @@ end)
 --
 --
 
-vim.lsp.enable("nixd")
-vim.lsp.config("nixd", {
-	default_config = {
-		cmd = { 'nixd' },
-		filetypes = { 'nix' },
-	}
-})
+-- vim.lsp.enable("nixd")
+-- vim.lsp.config("nixd", {
+-- 	default_config = {
+-- 		cmd = { 'nixd' },
+-- 		filetypes = { 'nix' },
+-- 	}
+-- })
 
 -- local nvim_lsp = require("lspconfig")
 -- nvim_lsp.nixd.setup({
