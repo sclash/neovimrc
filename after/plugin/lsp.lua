@@ -63,26 +63,9 @@ end)
 -- 	lineFoldingOnly = true,
 -- }
 
-local on_attach = function(bufnr)
-	vim.api.nvim_create_autocmd("CursorHold", {
-		buffer = bufnr,
-		callback = function()
-			local opts = {
-				focusable = false,
-				close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-				border = "rounded",
-				source = "always",
-				prefix = " ",
-				scope = "line",
-			}
-			vim.diagnostic.open_float(nil, opts)
-		end,
-	})
-end
 
 local nvim_lsp = require("lspconfig")
 nvim_lsp.nixd.setup({
-	on_attach = on_attach(),
 	-- capabilities = capabilities,
 	settings = {
 		nixd = {
@@ -95,16 +78,18 @@ nvim_lsp.nixd.setup({
 			options = {
 				nixos = {
 					expr =
-					'(builtins.getFlake "/etc/nixos").nixosConfigurations."asergi@nixos-os".options',
+					'(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations."nixos-os".options',
+					-- '(builtins.getFlake "/etc/nixos").nixosConfigurations."nixos-os".options',
 				},
-				home_manager = {
-					expr =
-					'(builtins.getFlake "/etc/nixos").homeConfigurations."asergi@nixos-os".options',
-				},
-				flake_parts = {
-					expr =
-					'let flake = builtins.getFlake ("/etc/nixos"); in flake.debug.options // flake.currentSystem.options',
-				},
+				-- home_manager = {
+				-- 	expr =
+				-- 	-- '(builtins.getFlake "/home/asergi/dotfiles/nixos").homeConfigurations."nixos-os".options',
+				-- 	'(builtins.getFlake "/etc/nixos").homeConfigurations."nixos-os".options',
+				-- },
+				-- flake_parts = {
+				-- 	expr =
+				-- 	'let flake = builtins.getFlake ("/etc/nixos"); in flake.debug.options // flake.currentSystem.options',
+				-- },
 			},
 		},
 	},
