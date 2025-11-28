@@ -23,104 +23,26 @@ end)
 --
 --
 
--- vim.lsp.enable("nixd")
--- vim.lsp.config("nixd", {
--- 	default_config = {
--- 		cmd = { 'nixd' },
--- 		filetypes = { 'nix' },
--- 	}
--- })
-
--- local nvim_lsp = require("lspconfig")
--- nvim_lsp.nixd.setup({
---    cmd = { "nixd" },
---    settings = {
---       nixd = {
---          nixpkgs = {
---             expr = "import <nixpkgs> { }",
---          },
---          formatting = {
---             command = { "nixfmt" },
---          },
---          options = {
---             nixos = {
---                expr = '(builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations.k-on.options',
---             },
---             home_manager = {
---                expr = '(builtins.getFlake ("git+file://" + toString ./.)).homeConfigurations."ruixi@k-on".options',
---             },
---          },
---       },
---    },
--- })
---
-
-
--- local capabilities = require("cmp_nvim_lsp").default_capabilities()
--- capabilities = vim.lsp.protocol.make_client_capabilities()
--- capabilities.textDocument.foldingRange = {
--- 	dynamicRegistration = false,
--- 	lineFoldingOnly = true,
--- }
-
-
-local nvim_lsp = require("lspconfig")
-nvim_lsp.nixd.setup({
-	-- capabilities = capabilities,
+vim.lsp.enable("nixd")
+vim.lsp.config("nixd", {
+	default_config = {
+		cmd = { 'nixd' },
+		filetypes = { 'nix' },
+	},
 	settings = {
 		nixd = {
 			nixpkgs = {
 				expr = "import <nixpkgs> { }",
 			},
 			formatting = {
+				-- choose: "nixfmt", "alejandra", "nixfmt-rfc-style"
 				command = { "nixfmt" },
-			},
-			options = {
-				nixos = {
-					expr =
-					'(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations."nixos-os".options',
-					-- '(builtins.getFlake "/etc/nixos").nixosConfigurations."nixos-os".options',
-				},
-				-- home_manager = {
-				-- 	expr =
-				-- 	-- '(builtins.getFlake "/home/asergi/dotfiles/nixos").homeConfigurations."nixos-os".options',
-				-- 	'(builtins.getFlake "/etc/nixos").homeConfigurations."nixos-os".options',
-				-- },
-				-- flake_parts = {
-				-- 	expr =
-				-- 	'let flake = builtins.getFlake ("/etc/nixos"); in flake.debug.options // flake.currentSystem.options',
-				-- },
 			},
 		},
 	},
 })
 
--- require("lspconfig").nixd.setup {
--- 	cmd = { "nixd" },
--- 	settings = {
--- 		nixd = {
--- 			nixpkgs = {
--- 				-- For flake.
--- 				-- This expression will be interpreted as "nixpkgs" toplevel
--- 				-- Nixd provides package, lib completion/information from it.
--- 				-- Resource Usage: Entries are lazily evaluated, entire nixpkgs takes 200~300MB for just "names".
--- 				-- Package documentation, versions, are evaluated by-need.
--- 				expr = "import (builtins.getFlake(toString ./.)).inputs.nixpkgs { }",
--- 			},
--- 			formatting = {
--- 				command = { "nixfmt" }, -- or nixfmt or nixpkgs-fmt
--- 			},
--- 			options = {
--- 				nixos = {
--- 					expr = "let flake = builtins.getFlake(toString ./.); in flake.nixosConfigurations.nz.options",
--- 				},
--- 				home_manager = {
--- 					expr = 'let flake = builtins.getFlake(toString ./.); in flake.homeConfigurations."asergi@nixos-os".options',
--- 				},
--- 			},
--- 		},
--- 	},
--- }
+
 
 
 -- lsp config for mojo
