@@ -10,8 +10,8 @@ lsp_zero.on_attach(function(_, bufnr)
 	vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
 	-- vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
 	-- vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
-	vim.keymap.set("n", "[d", function() vim.diagnostic.jump({count=1, float = true}) end, opts)
-	vim.keymap.set("n", "[d", function() vim.diagnostic.jump({count=-1, float = true}) end, opts)
+	vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = 1, float = true }) end, opts)
+	vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, opts)
 	vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
 	vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
 	vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
@@ -26,10 +26,116 @@ end)
 vim.lsp.enable("nixd")
 vim.lsp.config("nixd", {
 	default_config = {
-		cmd = {'nixd'},
-		filetypes = {'nix'},
+		cmd = { 'nixd' },
+		filetypes = { 'nix' },
 	}
 })
+
+-- local nvim_lsp = require("lspconfig")
+-- nvim_lsp.nixd.setup({
+--    cmd = { "nixd" },
+--    settings = {
+--       nixd = {
+--          nixpkgs = {
+--             expr = "import <nixpkgs> { }",
+--          },
+--          formatting = {
+--             command = { "nixfmt" },
+--          },
+--          options = {
+--             nixos = {
+--                expr = '(builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations.k-on.options',
+--             },
+--             home_manager = {
+--                expr = '(builtins.getFlake ("git+file://" + toString ./.)).homeConfigurations."ruixi@k-on".options',
+--             },
+--          },
+--       },
+--    },
+-- })
+--
+
+
+-- local capabilities = require("cmp_nvim_lsp").default_capabilities()
+-- capabilities = vim.lsp.protocol.make_client_capabilities()
+-- capabilities.textDocument.foldingRange = {
+-- 	dynamicRegistration = false,
+-- 	lineFoldingOnly = true,
+-- }
+
+local on_attach = function(bufnr)
+	vim.api.nvim_create_autocmd("CursorHold", {
+		buffer = bufnr,
+		callback = function()
+			local opts = {
+				focusable = false,
+				close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+				border = "rounded",
+				source = "always",
+				prefix = " ",
+				scope = "line",
+			}
+			vim.diagnostic.open_float(nil, opts)
+		end,
+	})
+end
+
+local nvim_lsp = require("lspconfig")
+nvim_lsp.nixd.setup({
+	on_attach = on_attach(),
+	-- capabilities = capabilities,
+	settings = {
+		nixd = {
+			nixpkgs = {
+				expr = "import <nixpkgs> { }",
+			},
+			formatting = {
+				command = { "nixfmt" },
+			},
+			options = {
+				nixos = {
+					expr =
+					'(builtins.getFlake "/etc/nixos").nixosConfigurations.hostname.options',
+				},
+				home_manager = {
+					expr =
+					'(builtins.getFlake "/etc/nixos").homeConfigurations."user@hostname".options',
+				},
+				flake_parts = {
+					expr =
+					'let flake = builtins.getFlake ("/etc/nixos"); in flake.debug.options // flake.currentSystem.options',
+				},
+			},
+		},
+	},
+})
+
+-- require("lspconfig").nixd.setup {
+-- 	cmd = { "nixd" },
+-- 	settings = {
+-- 		nixd = {
+-- 			nixpkgs = {
+-- 				-- For flake.
+-- 				-- This expression will be interpreted as "nixpkgs" toplevel
+-- 				-- Nixd provides package, lib completion/information from it.
+-- 				-- Resource Usage: Entries are lazily evaluated, entire nixpkgs takes 200~300MB for just "names".
+-- 				-- Package documentation, versions, are evaluated by-need.
+-- 				expr = "import (builtins.getFlake(toString ./.)).inputs.nixpkgs { }",
+-- 			},
+-- 			formatting = {
+-- 				command = { "nixfmt" }, -- or nixfmt or nixpkgs-fmt
+-- 			},
+-- 			options = {
+-- 				nixos = {
+-- 					expr = "let flake = builtins.getFlake(toString ./.); in flake.nixosConfigurations.nz.options",
+-- 				},
+-- 				home_manager = {
+-- 					expr = 'let flake = builtins.getFlake(toString ./.); in flake.homeConfigurations."asergi@nixos-os".options',
+-- 				},
+-- 			},
+-- 		},
+-- 	},
+-- }
 
 
 -- lsp config for mojo
@@ -57,7 +163,7 @@ vim.lsp.config("mojo", {
 
 
 vim.lsp.config("emmet_language_server", {
-	filetypes = {"html"},
+	filetypes = { "html" },
 })
 
 -- require("lspconfig").emmet_language_server.setup({
@@ -190,7 +296,7 @@ require('mason-lspconfig').setup({
 			vim.lsp.config("lua_ls", { options = lua_opts, capabilities = capabilities })
 		end,
 	},
-})    -- If you are using mason.nvim, you can get the ts_plugin_path like this
+}) -- If you are using mason.nvim, you can get the ts_plugin_path like this
 -- For Mason v1,
 -- local mason_registry = require('mason-registry')
 -- local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() .. '/node_modules/@vue/language-server'
@@ -200,7 +306,8 @@ require('mason-lspconfig').setup({
 -- local vue_language_server_path = vim.fn.stdpath('data');
 -- local vue_language_server_path = vim.fs.dirname(vim.fn.exepath("vue-language-server")) ..
 -- "/../lib/language-tools/packages/language-server/node_modules/@vue/typescript-plugin"
-local vue_language_server_path = vim.fn.stdpath('data') .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
+local vue_language_server_path = vim.fn.stdpath('data') ..
+    "/mason/packages/vue-language-server/node_modules/@vue/language-server"
 -- IMPORTANT: nvchad users cannot use `$MASON` directly as the option is set to `skip`, see: https://github.com/NvChad/NvChad/blob/29ebe31ea6a4edf351968c76a93285e6e108ea08/lua/nvchad/configs/mason.lua#L4
 
 -- local vue_language_server_path = '/path/to/@vue/language-server'
@@ -281,4 +388,4 @@ vim.lsp.config('vtsls', vtsls_config)
 vim.lsp.config('vue_ls', vue_ls_config)
 -- vim.lsp.config('ts_ls', ts_ls_config)
 -- vim.lsp.enable({  'vue_ls', 'ts_ls',  }) -- If using `ts_ls` replace `vtsls` to `ts_ls`
-vim.lsp.enable({  'vue_ls', 'vtsls',  }) -- If using `ts_ls` replace `vtsls` to `ts_ls`
+vim.lsp.enable({ 'vue_ls', 'vtsls', }) -- If using `ts_ls` replace `vtsls` to `ts_ls`
