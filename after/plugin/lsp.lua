@@ -23,7 +23,13 @@ end)
 --
 --
 
-vim.lsp.config("nixd", {})
+vim.lsp.enable("nixd")
+vim.lsp.config("nixd", {
+	default_config = {
+		cmd = {'nixd'},
+		filetypes = {'nix'},
+	}
+})
 
 
 -- lsp config for mojo
