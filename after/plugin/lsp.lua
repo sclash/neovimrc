@@ -95,11 +95,11 @@ nvim_lsp.nixd.setup({
 			options = {
 				nixos = {
 					expr =
-					'(builtins.getFlake "/etc/nixos").nixosConfigurations.hostname.options',
+					'(builtins.getFlake "/etc/nixos").nixosConfigurations."asergi@nixos-os".options',
 				},
 				home_manager = {
 					expr =
-					'(builtins.getFlake "/etc/nixos").homeConfigurations."user@hostname".options',
+					'(builtins.getFlake "/etc/nixos").homeConfigurations."asergi@nixos-os".options',
 				},
 				flake_parts = {
 					expr =
