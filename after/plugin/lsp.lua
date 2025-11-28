@@ -23,6 +23,7 @@ end)
 --
 --
 
+vim.lsp.config("nixd", {})
 
 
 -- lsp config for mojo
@@ -171,8 +172,8 @@ require('mason-tool-installer').setup({
 require('mason-lspconfig').setup({
 	ensure_installed = { 'vtsls', 'vue_ls', 'bashls', 'rust_analyzer', 'pyright', 'html', 'clangd', 'astro',
 		'lua_ls',
-		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'marksman',
-		'texlab', 'emmet_language_server','nil_ls' },
+		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'markdown_oxide',
+		'texlab', 'emmet_language_server', },
 	handlers = {
 		lsp_zero.default_setup,
 		lua_ls = function()
