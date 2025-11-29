@@ -49,6 +49,10 @@ nvim_lsp.nixd.setup({
 	-- capabilities = capabilities,
 	settings = {
 		nixd = {
+			flake = {
+				enable = true,
+				autoArchive = false,
+			},
 			nixpkgs = {
 				expr = "import <nixpkgs> { }",
 			},
