@@ -58,7 +58,10 @@ nvim_lsp.nixd.setup({
 			root_marker = { 'flake.nix', 'default.nix', 'shell.nix' },
 			options = {
 				nixos = {
-					expr = '(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations.nixos-os.options',
+					-- THIS WORKS
+					-- expr = '(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations.nixos-os.options',
+					--
+					expr = '(builtins.getFlake ("git+file://" + toString  github:sclash/dotfiles?ref=home-manager/nixos)).nixosConfigurations.nixos-os.options',
 					-- expr = '(builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations.nixos-os.options',
 					},
 				-- home_manager = {
