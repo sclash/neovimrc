@@ -59,7 +59,7 @@ nvim_lsp.nixd.setup({
 			options = {
 				nixos = {
 					expr =
-					'(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations.hostname.options',
+					'(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations.nixos-os.options',
 					},
 				},
 			},
