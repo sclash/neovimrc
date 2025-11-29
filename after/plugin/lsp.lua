@@ -64,10 +64,11 @@ nvim_lsp.nixd.setup({
 					expr = '(builtins.getFlake ("git+file://" + toString  github:sclash/dotfiles?ref=home-manager/nixos)).nixosConfigurations.nixos-os.options',
 					-- expr = '(builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations.nixos-os.options',
 					},
-				-- home_manager = {
-				-- 	expr = '(builtins.getFlake "/home/asergi/dotfiles/nixos").homeConfigurations."asergi@nixos-os".options',
-				-- 	-- expr = '(builtins.getFlake ("git+file://" + toString ./.)).homeConfigurations."asergi@nixos-os".options',
-				-- 	},
+				home_manager = {
+					-- expr = '(builtins.getFlake "/home/asergi/dotfiles/nixos").homeConfigurations."asergi@nixos-os".options',
+					expr = '(builtins.getFlake ("git+file://" + toString  github:sclash/dotfiles?ref=home-manager/nixos)).homeConfigurations."asergi@nixos-os".options',
+					-- expr = '(builtins.getFlake ("git+file://" + toString ./.)).homeConfigurations."asergi@nixos-os".options',
+					},
 				},
 			},
 		},
