@@ -58,14 +58,12 @@ nvim_lsp.nixd.setup({
 			root_marker = { 'flake.nix', 'default.nix', 'shell.nix' },
 			options = {
 				nixos = {
-					-- expr = '(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations.nixos-os.options',
-					expr = '(builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations.nixos-os.options',
-
-
+					expr = '(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations.nixos-os.options',
+					-- expr = '(builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations.nixos-os.options',
 					},
 				home_manager = {
-					expr =
-					'(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations."asergi@nixos-os".options',
+					expr = '(builtins.getFlake "/home/asergi/dotfiles/nixos").homeConfigurations."asergi@nixos-os".options',
+					-- expr = '(builtins.getFlake ("git+file://" + toString ./.)).homeConfigurations."asergi@nixos-os".options',
 					},
 				},
 			},
