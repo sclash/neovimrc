@@ -23,24 +23,49 @@ end)
 --
 --
 
-vim.lsp.enable("nixd")
-vim.lsp.config("nixd", {
-	default_config = {
-		cmd = { 'nixd' },
-		filetypes = { 'nix' },
-	},
+-- vim.lsp.enable("nixd")
+-- vim.lsp.config("nixd", {
+-- 	default_config = {
+-- 		cmd = { 'nixd' },
+-- 		filetypes = { 'nix' },
+-- 		root_dir = { 'flake.nix', 'default.nix', 'shell.nix' },
+-- 	},
+-- 	settings = {
+-- 		nixd = {
+-- 			nixpkgs = {
+-- 				expr = "import <nixpkgs> { }",
+-- 			},
+-- 			formatting = {
+-- 				-- choose: "nixfmt", "alejandra", "nixfmt-rfc-style"
+-- 				command = { "nixfmt" },
+-- 			},
+-- 		},
+-- 	},
+-- })
+
+local nvim_lsp = require("lspconfig")
+nvim_lsp.nixd.setup({
+	-- on_attach = on_attach(),
+	-- capabilities = capabilities,
 	settings = {
 		nixd = {
 			nixpkgs = {
 				expr = "import <nixpkgs> { }",
 			},
 			formatting = {
-				-- choose: "nixfmt", "alejandra", "nixfmt-rfc-style"
 				command = { "nixfmt" },
 			},
+			root_marker = { 'flake.nix', 'default.nix', 'shell.nix' },
+			options = {
+				nixos = {
+					expr =
+					'(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations.hostname.options',
+					},
+				},
+			},
 		},
-	},
-})
+	}
+)
 
 
 
