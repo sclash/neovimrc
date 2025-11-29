@@ -71,10 +71,10 @@ nvim_lsp.nixd.setup({
 					-- expr = '(builtins.getFlake ("git+file://" + toString  github:sclash/dotfiles?ref=home-manager/nixos)).homeConfigurations."asergi@nixos-os".options',
 					-- expr = '(builtins.getFlake ("git+file://" + toString ./.)).homeConfigurations."asergi@nixos-os".options',
 				},
-				flake_parts = {
-					expr =
-					'let flake = builtins.getFlake ("/home/asergi/dotfiles/nixos"); in flake.debug.options // flake.currentSystem.options',
-				},
+				-- flake_parts = {
+				-- 	expr =
+				-- 	'let flake = builtins.getFlake ("/home/asergi/dotfiles/nixos"); in flake.debug.options // flake.currentSystem.options',
+				-- },
 			},
 		},
 	},
