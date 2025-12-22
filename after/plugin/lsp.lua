@@ -61,7 +61,7 @@ local function nix_eval(attr)
 	if not handle then return nil end
 	local result = handle:read("*a")
 	handle:close()
-	result = vim.trim(result)
+	-- result = vim.trim(result)
 	if result == "" then return nil end
 	return result
 end
@@ -75,18 +75,6 @@ end
 local glibc_include = nix_include("glibc.dev")
 local gcc_include   = nix_include("gcc.cc.lib")
 
-local function foo()
-  error("something went wrong")
-end
-
-vim.api.nvim_create_user_command("Foo", function()
-  xpcall(foo, function(err)
-    vim.notify(
-      err .. "\n" .. debug.traceback(),
-      vim.log.levels.ERROR
-    )
-  end)
-end, {})
 
 if is_nixos then
 	table.insert(clang_cmd_fallbackFlags, "-isystem")
@@ -98,27 +86,9 @@ end
 require("lspconfig").clangd.setup({
 	cmd = clangd_cmd,
 	init_options = {
-		fallbackFlags = {
-			clang_cmd_fallbackFlags,
-		}
-	}
+		fallbackFlags = clang_cmd_fallbackFlags,
+	},
 })
-
-
--- require("lspconfig").clangd.setup({
--- 	cmd = {
--- 		"clangd",
--- 		"--background-index",
--- 		"--clang-tidy",
--- 	},
--- 	init_options = {
--- 		fallbackFlags = {
--- 			"-std=c11",
--- 			"-isystem", "/nix/store/gi4cz4ir3zlwhf1azqfgxqdnczfrwsr7-glibc-2.40-66-dev/include",
--- 			"-isystem", "/nix/store/xm08aqdd7pxcdhm0ak6aqb1v7hw5q6ri-gcc-14.3.0-lib/include",
--- 		},
--- 	},
--- })
 
 
 nvim_lsp.nixd.setup({
