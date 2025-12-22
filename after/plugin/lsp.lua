@@ -1,3 +1,4 @@
+local is_nixos = require("asergi.platform").is_nixos;
 local lsp_zero = require('lsp-zero')
 -- local util = require('lspconfig.util')
 
@@ -44,6 +45,82 @@ end)
 -- })
 
 local nvim_lsp = require("lspconfig")
+
+
+local clangd_cmd = {
+	"clangd",
+	"--background-index",
+	"--clang-tidy",
+}
+local clang_cmd_fallbackFlags = {
+	"-std=c11",
+}
+
+local function nix_eval(attr)
+	local handle = io.popen("nix eval --raw nixpkgs#" .. attr .. " 2>/dev/null")
+	if not handle then return nil end
+	local result = handle:read("*a")
+	handle:close()
+	result = vim.trim(result)
+	if result == "" then return nil end
+	return result
+end
+
+local function nix_include(attr)
+	local path = nix_eval(attr)
+	if not path then return nil end
+	return path .. "/include"
+end
+
+local glibc_include = nix_include("glibc.dev")
+local gcc_include   = nix_include("gcc.cc.lib")
+
+local function foo()
+  error("something went wrong")
+end
+
+vim.api.nvim_create_user_command("Foo", function()
+  xpcall(foo, function(err)
+    vim.notify(
+      err .. "\n" .. debug.traceback(),
+      vim.log.levels.ERROR
+    )
+  end)
+end, {})
+
+if is_nixos then
+	table.insert(clang_cmd_fallbackFlags, "-isystem")
+	table.insert(clang_cmd_fallbackFlags, glibc_include)
+	table.insert(clang_cmd_fallbackFlags, "-isystem")
+	table.insert(clang_cmd_fallbackFlags, gcc_include)
+end
+
+require("lspconfig").clangd.setup({
+	cmd = clangd_cmd,
+	init_options = {
+		fallbackFlags = {
+			clang_cmd_fallbackFlags,
+		}
+	}
+})
+
+
+-- require("lspconfig").clangd.setup({
+-- 	cmd = {
+-- 		"clangd",
+-- 		"--background-index",
+-- 		"--clang-tidy",
+-- 	},
+-- 	init_options = {
+-- 		fallbackFlags = {
+-- 			"-std=c11",
+-- 			"-isystem", "/nix/store/gi4cz4ir3zlwhf1azqfgxqdnczfrwsr7-glibc-2.40-66-dev/include",
+-- 			"-isystem", "/nix/store/xm08aqdd7pxcdhm0ak6aqb1v7hw5q6ri-gcc-14.3.0-lib/include",
+-- 		},
+-- 	},
+-- })
+
+
 nvim_lsp.nixd.setup({
 	-- on_attach = on_attach(),
 	-- capabilities = capabilities,
