@@ -21,9 +21,10 @@ require('lazy').setup({
 			{ "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
 		}
 	},
+	{ 'Vigemus/iron.nvim' },
 	{ 'brenoprata10/nvim-highlight-colors' },
 	{ 'sindrets/diffview.nvim' },
-	{"lewis6991/gitsigns.nvim"},
+	{ "lewis6991/gitsigns.nvim" },
 	-- FUNDAMENTAL
 	{ "nvim-treesitter/nvim-treesitter",   build = ":TSUpdate" },
 	{
@@ -204,10 +205,10 @@ require('lazy').setup({
 	-- blink.cmp nvim
 	{
 		'saghen/blink.cmp',
-	-- 	-- optional: provides snippets for the snippet source
+		-- 	-- optional: provides snippets for the snippet source
 		dependencies = { 'rafamadriz/friendly-snippets' },
-	--
-	-- 	-- use a release tag to download pre-built binaries
+		--
+		-- 	-- use a release tag to download pre-built binaries
 		version = '1.*',
 		-- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
 		-- build = 'cargo build --release',
