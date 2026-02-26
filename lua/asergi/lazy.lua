@@ -20,12 +20,15 @@ require('lazy').setup({
 			{ "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
 		}
 	},
+	{
+		"3rd/image.nvim",
+	},
 	{ 'Vigemus/iron.nvim' },
-	{ "3rd/image.nvim" },
 	{
 		"jeryldev/pyworks.nvim",
 		dependencies = {
 			"benlubas/molten-nvim",
+			"3rd/image.nvim"
 		},
 		config = function()
 			require("pyworks").setup() -- See Configuration section for options
@@ -284,10 +287,8 @@ require('lazy').setup({
 		-- 	fuzzy = { implementation = "prefer_rust_with_warning" }
 		-- },
 		opts_extend = { "sources.default" }
-	}, opts = {
-	rocks = {
-		enabled = false,
-		hererocks = true,
 	},
-}
+}, {
+
+	{ rocks = { enabled = false, hererokcs = true } }
 })
