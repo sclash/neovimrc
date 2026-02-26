@@ -1,5 +1,4 @@
 require('lazy').setup({
-
 	-- nvim v0.8.0
 	{
 		"kdheepak/lazygit.nvim",
@@ -22,6 +21,18 @@ require('lazy').setup({
 		}
 	},
 	{ 'Vigemus/iron.nvim' },
+	{
+		"jeryldev/pyworks.nvim",
+		dependencies = {
+			"benlubas/molten-nvim",
+			"3rd/image.nvim",
+		},
+		config = function()
+			require("pyworks").setup() -- See Configuration section for options
+		end,
+		lazy = false,
+		priority = 100,
+	},
 	{ 'brenoprata10/nvim-highlight-colors' },
 	{ 'sindrets/diffview.nvim' },
 	{ "lewis6991/gitsigns.nvim" },
