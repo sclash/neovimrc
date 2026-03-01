@@ -1,1 +1,0 @@
-/nix/store/9v718fs9dfgbw399r9sgyislhv64gr2w-home-manager-files/.config/nvim/after/plugin/pyworks.lua
