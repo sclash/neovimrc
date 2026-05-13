@@ -25,7 +25,7 @@ require('lazy').setup({
 	{ 'sindrets/diffview.nvim' },
 	{ "lewis6991/gitsigns.nvim" },
 	-- FUNDAMENTAL
-	{ "nvim-treesitter/nvim-treesitter",   build = ":TSUpdate" },
+	{ "nvim-treesitter/nvim-treesitter",   lazy = false, build = ":TSUpdate" },
 	{
 		'nvim-telescope/telescope.nvim',
 		tag = '0.1.5',
