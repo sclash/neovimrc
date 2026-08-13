@@ -140,17 +140,29 @@ nvim_lsp.nixd.setup({
 -- https://forum.modular.com/t/mojo-lsp-setup-for-neovim/501
 -- In order to check installation guide :help lspconfig-all
 -- Be sure to have built magic + Mojo, refer to the official guide: https://docs.modular.com/mojo/manual/get-started/
+-- uv init
+-- uv add "max[all]" (to install mojo-lsp-server)
 -- require('lspconfig').mojo.setup({
+--  DEPRECATED https://github.com/neovim/nvim-lspconfig/blob/master/lua/lspconfig/configs/mojo.lua
+-- vim.lsp.config("mojo", {
+-- 	default_config = {
+-- 		cmd = { 'mojo-lsp-server' },
+-- 		filetypes = { 'mojo' },
+-- 		root_dir = function(fname)
+-- 			return vim.fs.dirname(vim.fs.find('.git', { path = fname, upward = true })[1])
+-- 		end,
+-- 		single_file_support = true,
+-- 	},
+-- })
+--
+--  NEW https://github.com/neovim/nvim-lspconfig/blob/master/lsp/mojo.lua
+---@type vim.lsp.Config
 vim.lsp.config("mojo", {
-	default_config = {
-		cmd = { 'mojo-lsp-server' },
-		filetypes = { 'mojo' },
-		root_dir = function(fname)
-			return vim.fs.dirname(vim.fs.find('.git', { path = fname, upward = true })[1])
-		end,
-		single_file_support = true,
-	},
+  cmd = { 'mojo-lsp-server' },
+  filetypes = { 'mojo' },
+  root_markers = { '.git' },
 })
+vim.lsp.enable("mojo")
 
 -- require('lspconfig').vuels.setup({
 -- 	default_config = {
