@@ -7,7 +7,7 @@ require('telescope').setup({
 			".git",
 			".cache",
 			-- Excludes files that contain no period (e.g., executables, build artifacts)
-			[=[^[^.]+$]=],
+			-- [=[^[^.]+$]=],
 		},
 		find_files = {
 			hidden = true,
