@@ -47,6 +47,14 @@ end)
 local nvim_lsp = require("lspconfig")
 
 
+vim.lsp.config("qmlls", {
+	cmd = {
+		"qmlls", "-E"
+	}
+})
+vim.lsp.enable("qmlls")
+
+
 local clangd_cmd = {
 	"clangd",
 	"--background-index",
@@ -83,54 +91,90 @@ if is_nixos then
 	table.insert(clang_cmd_fallbackFlags, gcc_include)
 end
 
-require("lspconfig").clangd.setup({
-	cmd = clangd_cmd,
+
+vim.lsp.config("clangd", {
+	cmd = {clangd_cmd},
 	init_options = {
-		fallbackFlags = clang_cmd_fallbackFlags,
-	},
+		fallbackFlags = clang_cmd_fallbackFlags
+	}
 })
-
-
-nvim_lsp.nixd.setup({
-	-- on_attach = on_attach(),
-	-- capabilities = capabilities,
+-- require("lspconfig").clangd.setup({
+-- 	cmd = clangd_cmd,
+-- 	init_options = {
+-- 		fallbackFlags = clang_cmd_fallbackFlags,
+-- 	},
+-- })
+--
+--
+vim.lsp.config("nixd", {
+	cmd = { "nixd" },
+	filetypes = { "nix" },
+	root_markers = { "flake.nix", ".git" },
 	settings = {
 		nixd = {
-			flake = {
-				enable = true,
-				autoArchive = false,
-			},
 			nixpkgs = {
 				expr = "import <nixpkgs> { }",
 			},
 			formatting = {
 				command = { "nixfmt" },
 			},
-			root_marker = { 'flake.nix', 'default.nix', 'shell.nix' },
 			options = {
 				nixos = {
-					-- THIS WORKS
-					expr =
-					'(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations.nixos-os.options',
-					--
-					-- expr = '(builtins.getFlake ("git+file://" + toString  github:sclash/dotfiles?ref=home-manager/nixos)).nixosConfigurations.nixos-os.options',
-					-- expr = '(builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations.nixos-os.options',
+					expr = '(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations.nixos-os.options',
 				},
 				home_manager = {
-					expr =
-					'(builtins.getFlake "/home/asergi/dotfiles/nixos").homeConfigurations."asergi@nixos-os".options',
-					-- expr = '(builtins.getFlake ("git+file://" + toString  github:sclash/dotfiles?ref=home-manager/nixos)).homeConfigurations."asergi@nixos-os".options',
-					-- expr = '(builtins.getFlake ("git+file://" + toString ./.)).homeConfigurations."asergi@nixos-os".options',
+					expr = '(builtins.getFlake "/home/asergi/dotfiles/nixos").homeConfigurations."asergi@nixos-os".options',
 				},
 				flake_parts = {
-					expr =
-					'let flake = builtins.getFlake ("/home/asergi/dotfiles/nixos"); in flake.debug.options // flake.currentSystem.options',
+					expr = 'let flake = builtins.getFlake ("/home/asergi/dotfiles/nixos"); in flake.debug.options // flake.currentSystem.options',
 				},
 			},
 		},
 	},
-}
-)
+})
+vim.lsp.enable("nixd")
+
+
+-- nvim_lsp.nixd.setup({
+-- 	-- on_attach = on_attach(),
+-- 	-- capabilities = capabilities,
+-- 	settings = {
+-- 		nixd = {
+-- 			flake = {
+-- 				enable = true,
+-- 				autoArchive = false,
+-- 			},
+-- 			nixpkgs = {
+-- 				expr = "import <nixpkgs> { }",
+-- 			},
+-- 			formatting = {
+-- 				command = { "nixfmt" },
+-- 			},
+-- 			root_marker = { 'flake.nix', 'default.nix', 'shell.nix' },
+-- 			options = {
+-- 				nixos = {
+-- 					-- THIS WORKS
+-- 					expr =
+-- 					'(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations.nixos-os.options',
+-- 					--
+-- 					-- expr = '(builtins.getFlake ("git+file://" + toString  github:sclash/dotfiles?ref=home-manager/nixos)).nixosConfigurations.nixos-os.options',
+-- 					-- expr = '(builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations.nixos-os.options',
+-- 				},
+-- 				home_manager = {
+-- 					expr =
+-- 					'(builtins.getFlake "/home/asergi/dotfiles/nixos").homeConfigurations."asergi@nixos-os".options',
+-- 					-- expr = '(builtins.getFlake ("git+file://" + toString  github:sclash/dotfiles?ref=home-manager/nixos)).homeConfigurations."asergi@nixos-os".options',
+-- 					-- expr = '(builtins.getFlake ("git+file://" + toString ./.)).homeConfigurations."asergi@nixos-os".options',
+-- 				},
+-- 				flake_parts = {
+-- 					expr =
+-- 					'let flake = builtins.getFlake ("/home/asergi/dotfiles/nixos"); in flake.debug.options // flake.currentSystem.options',
+-- 				},
+-- 			},
+-- 		},
+-- 	},
+-- }
+-- )
 
 
 
