@@ -47,14 +47,6 @@ end)
 local nvim_lsp = require("lspconfig")
 
 
-vim.lsp.config("qmlls", {
-	cmd = {
-		"qmlls", "-E"
-	}
-})
-vim.lsp.enable("qmlls")
-
-
 local clangd_cmd = {
 	"clangd",
 	"--background-index",
@@ -79,6 +71,46 @@ local function nix_include(attr)
 	if not path then return nil end
 	return path .. "/include"
 end
+
+local function nix_qml_path(attr)
+	local p = nix_eval(attr)
+	if p and p ~= "" then
+		p = p:gsub("%s+$", "")
+		local candidate = p .. "/lib/qt-6/qml"
+		-- nix eval for quickshell returns source path without qml; verify existence
+		if vim.loop.fs_stat(candidate) then
+			return candidate
+		end
+	end
+end
+
+local quickshell_qml = nix_qml_path("quickshell")
+local qt_qml = nix_qml_path("qt6.qtdeclarative")
+-- fallback to home-manager aggregated qml path (contains both QtQuick + Quickshell)
+local hm_qml = "/etc/profiles/per-user/asergi/lib/qt-6/qml"
+if not quickshell_qml or not vim.loop.fs_stat(quickshell_qml) then
+	quickshell_qml = hm_qml
+end
+if not qt_qml or not vim.loop.fs_stat(qt_qml) then
+	qt_qml = hm_qml
+end
+local qmlls_cmd = { "/etc/profiles/per-user/asergi/bin/qmlls", "-E" }
+if quickshell_qml and vim.loop.fs_stat(quickshell_qml) then
+	vim.list_extend(qmlls_cmd, { "-I", quickshell_qml })
+end
+if qt_qml and qt_qml ~= quickshell_qml and vim.loop.fs_stat(qt_qml) then
+	vim.list_extend(qmlls_cmd, { "-I", qt_qml })
+end
+-- deduplicate if both resolve to same aggregated path
+if #qmlls_cmd == 2 then -- no -I added, fallback ensures at least hm_qml
+	vim.list_extend(qmlls_cmd, { "-I", hm_qml })
+end
+vim.lsp.config("qmlls", {
+	cmd = qmlls_cmd,
+	filetypes = { "qml", "qmljs" },
+	root_markers = { ".git", "shell.qml" },
+})
+vim.lsp.enable("qmlls")
 
 local glibc_include = nix_include("glibc.dev")
 local gcc_include   = nix_include("gcc.cc.lib")
