@@ -126,18 +126,12 @@ end
 
 
 vim.lsp.config("clangd", {
-	cmd = { clangd_cmd },
+	cmd = clangd_cmd,
 	init_options = {
-		fallbackFlags = clang_cmd_fallbackFlags
-	}
+		fallbackFlags = clang_cmd_fallbackFlags,
+	},
 })
 vim.lsp.enable("clangd")
--- require("lspconfig").clangd.setup({
--- 	cmd = clangd_cmd,
--- 	init_options = {
--- 		fallbackFlags = clang_cmd_fallbackFlags,
--- 	},
--- })
 --
 --
 vim.lsp.config("nixd", {
@@ -372,10 +366,13 @@ require('mason-tool-installer').setup({
 	}
 })
 require('mason-lspconfig').setup({
-	ensure_installed = { 'vtsls', 'vue_ls', 'bashls', 'rust_analyzer', 'pyright', 'html', 'clangd', 'astro',
+	ensure_installed = { 'vtsls', 'vue_ls', 'bashls', 'rust_analyzer', 'pyright', 'html',  'astro','clangd',
 		'lua_ls',
 		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'markdown_oxide',
 		'texlab', 'emmet_language_server', },
+	automatic_enable = {
+		exclude = { "clangd" }
+	},
 	handlers = {
 		lsp_zero.default_setup,
 		lua_ls = function()
