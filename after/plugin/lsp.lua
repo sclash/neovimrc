@@ -114,16 +114,88 @@ vim.lsp.config("qmlls", {
 })
 vim.lsp.enable("qmlls")
 
-local glibc_include = nix_include("glibc.dev")
-local gcc_include   = nix_include("gcc.cc.lib")
+-- Optimized: cache nix includes to avoid blocking startup (nix eval is ~1-2s)
+local cache_path = vim.fn.stdpath("cache") .. "/nix-clangd-includes.json"
+local cache_ttl = 7 * 24 * 60 * 60 -- 7 days
 
-if is_nixos then
-	table.insert(clang_cmd_fallbackFlags, "-isystem")
-	table.insert(clang_cmd_fallbackFlags, glibc_include)
-	table.insert(clang_cmd_fallbackFlags, "-isystem")
-	table.insert(clang_cmd_fallbackFlags, gcc_include)
+local function load_nix_includes_cache()
+	if not is_nixos then return nil end
+	local fd = io.open(cache_path, "r")
+	if not fd then return nil end
+	local content = fd:read("*a")
+	fd:close()
+	local ok, data = pcall(vim.json.decode, content)
+	if not ok or type(data) ~= "table" then return nil end
+	if not data.glibc or not data.gcc or not data.timestamp then return nil end
+	if os.time() - data.timestamp > cache_ttl then return nil end
+	if not vim.uv.fs_stat(data.glibc) then return nil end
+	return data
 end
 
+local function save_nix_includes_cache(glibc, gcc)
+	local dir = vim.fn.fnamemodify(cache_path, ":h")
+	vim.fn.mkdir(dir, "p")
+	local data = { glibc = glibc, gcc = gcc, timestamp = os.time() }
+	local fd = io.open(cache_path, "w")
+	if fd then
+		fd:write(vim.json.encode(data))
+		fd:close()
+	end
+end
+
+local function apply_fallback_flags(glibc, gcc)
+	if not glibc or not gcc then return end
+	for _, v in ipairs(clang_cmd_fallbackFlags) do
+		if v == glibc or v == gcc then return end
+	end
+	table.insert(clang_cmd_fallbackFlags, "-isystem")
+	table.insert(clang_cmd_fallbackFlags, glibc)
+	table.insert(clang_cmd_fallbackFlags, "-isystem")
+	table.insert(clang_cmd_fallbackFlags, gcc)
+	vim.lsp.config("clangd", {
+		cmd = clangd_cmd,
+		init_options = { fallbackFlags = clang_cmd_fallbackFlags },
+	})
+end
+
+local function refresh_nix_includes_async()
+	if not is_nixos then return end
+	if vim.fn.executable("nix") == 0 then return end
+	local pending = 2
+	local results = {}
+	local function check_done()
+		pending = pending - 1
+		if pending ~= 0 then return end
+		local glibc_path = results.glibc and vim.trim(results.glibc) or nil
+		local gcc_path = results.gcc and vim.trim(results.gcc) or nil
+		if not glibc_path or glibc_path == "" or not gcc_path or gcc_path == "" then return end
+		local glibc = glibc_path .. "/include"
+		local gcc = gcc_path .. "/include"
+		if not vim.uv.fs_stat(glibc) then return end
+		save_nix_includes_cache(glibc, gcc)
+		vim.schedule(function()
+			apply_fallback_flags(glibc, gcc)
+		end)
+	end
+	vim.system({ "nix", "eval", "--raw", "nixpkgs#glibc.dev" }, { text = true }, function(obj)
+		results.glibc = (obj.code == 0 and obj.stdout) or nil
+		vim.schedule(check_done)
+	end)
+	vim.system({ "nix", "eval", "--raw", "nixpkgs#gcc.cc.lib" }, { text = true }, function(obj)
+		results.gcc = (obj.code == 0 and obj.stdout) or nil
+		vim.schedule(check_done)
+	end)
+end
+
+if is_nixos then
+	local cached = load_nix_includes_cache()
+	if cached then
+		apply_fallback_flags(cached.glibc, cached.gcc)
+	end
+	vim.schedule(function()
+		vim.defer_fn(refresh_nix_includes_async, 200)
+	end)
+end
 
 vim.lsp.config("clangd", {
 	cmd = clangd_cmd,
@@ -132,6 +204,12 @@ vim.lsp.config("clangd", {
 	},
 })
 vim.lsp.enable("clangd")
+
+vim.api.nvim_create_user_command("NixClangdRefresh", function()
+	vim.fn.delete(cache_path)
+	refresh_nix_includes_async()
+	vim.notify("nix clangd includes refresh started (async)", vim.log.levels.INFO)
+end, { desc = "Refresh cached nix glibc/gcc includes for clangd" })
 --
 --
 vim.lsp.config("nixd", {
