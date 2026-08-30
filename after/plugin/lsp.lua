@@ -61,7 +61,7 @@ local function nix_eval(attr)
 	if not handle then return nil end
 	local result = handle:read("*a")
 	handle:close()
-	-- result = vim.trim(result)
+	result = vim.trim(result)
 	if result == "" then return nil end
 	return result
 end
@@ -71,42 +71,44 @@ local function nix_include(attr)
 	if not path then return nil end
 	return path .. "/include"
 end
-
-local function nix_qml_path(attr)
-	local p = nix_eval(attr)
-	if p and p ~= "" then
-		p = p:gsub("%s+$", "")
-		local candidate = p .. "/lib/qt-6/qml"
-		-- nix eval for quickshell returns source path without qml; verify existence
-		if vim.loop.fs_stat(candidate) then
-			return candidate
-		end
-	end
-end
-
-local quickshell_qml = nix_qml_path("quickshell")
-local qt_qml = nix_qml_path("qt6.qtdeclarative")
--- fallback to home-manager aggregated qml path (contains both QtQuick + Quickshell)
+--
+-- local function nix_qml_path(attr)
+-- 	local p = nix_eval(attr)
+-- 	if p and p ~= "" then
+-- 		p = p:gsub("%s+$", "")
+-- 		local candidate = p .. "/lib/qt-6/qml"
+-- 		-- nix eval for quickshell returns source path without qml; verify existence
+-- 		if vim.loop.fs_stat(candidate) then
+-- 			return candidate
+-- 		end
+-- 	end
+-- end
+--
+-- local quickshell_qml = nix_qml_path("quickshell")
+-- local qt_qml = nix_qml_path("qt6.qtdeclarative")
+-- -- fallback to home-manager aggregated qml path (contains both QtQuick + Quickshell)
 local hm_qml = "/etc/profiles/per-user/asergi/lib/qt-6/qml"
-if not quickshell_qml or not vim.loop.fs_stat(quickshell_qml) then
-	quickshell_qml = hm_qml
-end
-if not qt_qml or not vim.loop.fs_stat(qt_qml) then
-	qt_qml = hm_qml
-end
-local qmlls_cmd = { "/etc/profiles/per-user/asergi/bin/qmlls", "-E" }
-if quickshell_qml and vim.loop.fs_stat(quickshell_qml) then
-	vim.list_extend(qmlls_cmd, { "-I", quickshell_qml })
-end
-if qt_qml and qt_qml ~= quickshell_qml and vim.loop.fs_stat(qt_qml) then
-	vim.list_extend(qmlls_cmd, { "-I", qt_qml })
-end
--- deduplicate if both resolve to same aggregated path
-if #qmlls_cmd == 2 then -- no -I added, fallback ensures at least hm_qml
-	vim.list_extend(qmlls_cmd, { "-I", hm_qml })
-end
+-- if not quickshell_qml or not vim.loop.fs_stat(quickshell_qml) then
+-- 	quickshell_qml = hm_qml
+-- end
+-- if not qt_qml or not vim.loop.fs_stat(qt_qml) then
+-- 	qt_qml = hm_qml
+-- end
+-- local qmlls_cmd = { "/etc/profiles/per-user/asergi/bin/qmlls", "-E" }
+-- if quickshell_qml and vim.loop.fs_stat(quickshell_qml) then
+-- 	vim.list_extend(qmlls_cmd, { "-I", quickshell_qml })
+-- end
+-- if qt_qml and qt_qml ~= quickshell_qml and vim.loop.fs_stat(qt_qml) then
+-- 	vim.list_extend(qmlls_cmd, { "-I", qt_qml })
+-- end
+-- -- deduplicate if both resolve to same aggregated path
+-- if #qmlls_cmd == 2 then -- no -I added, fallback ensures at least hm_qml
+-- 	vim.list_extend(qmlls_cmd, { "-I", hm_qml })
+-- end
 vim.lsp.config("qmlls", {
-	cmd = qmlls_cmd,
+	-- cmd = qmlls_cmd,
+	cmd = {"qmlls", "-E", "-I", hm_qml},
+	-- cmd = { "qmlls", "-E" },
 	filetypes = { "qml", "qmljs" },
 	root_markers = { ".git", "shell.qml" },
 })
@@ -114,7 +116,6 @@ vim.lsp.enable("qmlls")
 
 local glibc_include = nix_include("glibc.dev")
 local gcc_include   = nix_include("gcc.cc.lib")
-
 
 if is_nixos then
 	table.insert(clang_cmd_fallbackFlags, "-isystem")
@@ -125,11 +126,12 @@ end
 
 
 vim.lsp.config("clangd", {
-	cmd = {clangd_cmd},
+	cmd = { clangd_cmd },
 	init_options = {
 		fallbackFlags = clang_cmd_fallbackFlags
 	}
 })
+vim.lsp.enable("clangd")
 -- require("lspconfig").clangd.setup({
 -- 	cmd = clangd_cmd,
 -- 	init_options = {
@@ -152,13 +154,16 @@ vim.lsp.config("nixd", {
 			},
 			options = {
 				nixos = {
-					expr = '(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations.nixos-os.options',
+					expr =
+					'(builtins.getFlake "/home/asergi/dotfiles/nixos").nixosConfigurations.nixos-os.options',
 				},
 				home_manager = {
-					expr = '(builtins.getFlake "/home/asergi/dotfiles/nixos").homeConfigurations."asergi@nixos-os".options',
+					expr =
+					'(builtins.getFlake "/home/asergi/dotfiles/nixos").homeConfigurations."asergi@nixos-os".options',
 				},
 				flake_parts = {
-					expr = 'let flake = builtins.getFlake ("/home/asergi/dotfiles/nixos"); in flake.debug.options // flake.currentSystem.options',
+					expr =
+					'let flake = builtins.getFlake ("/home/asergi/dotfiles/nixos"); in flake.debug.options // flake.currentSystem.options',
 				},
 			},
 		},
@@ -234,9 +239,9 @@ vim.lsp.enable("nixd")
 --  NEW https://github.com/neovim/nvim-lspconfig/blob/master/lsp/mojo.lua
 ---@type vim.lsp.Config
 vim.lsp.config("mojo", {
-  cmd = { 'mojo-lsp-server' },
-  filetypes = { 'mojo' },
-  root_markers = { '.git' },
+	cmd = { 'mojo-lsp-server' },
+	filetypes = { 'mojo' },
+	root_markers = { '.git' },
 })
 vim.lsp.enable("mojo")
 

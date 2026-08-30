@@ -25,14 +25,33 @@ require('lazy').setup({
 	{ 'sindrets/diffview.nvim' },
 	{ "lewis6991/gitsigns.nvim" },
 	-- FUNDAMENTAL
-	{ "nvim-treesitter/nvim-treesitter",   lazy = false, build = ":TSUpdate" },
+	-- { "nvim-treesitter/nvim-treesitter",   lazy = false, build = ":TSUpdate" },
+	{
+		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
+		lazy = false,
+		build = ":TSUpdate",
+		config = function()
+			require("nvim-treesitter").setup()
+			require("nvim-treesitter").install({
+				"lua", "nix", "markdown", "markdown_inline", "bash", "json", "yaml",
+			})
+			vim.api.nvim_create_autocmd("FileType", {
+				callback = function(ev)
+					pcall(vim.treesitter.start, ev.buf)
+				end,
+			})
+		end,
+	},
 	{
 		'nvim-telescope/telescope.nvim',
-		tag = '0.1.5',
-		-- or                              , branch = '0.1.x',
-		dependencies = { 'nvim-lua/plenary.nvim' }
+		version = '*',
+		dependencies = {
+			'nvim-lua/plenary.nvim',
+			-- optional but recommended
+			{ 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+		}
 	},
-
 	{
 		"folke/lazydev.nvim",
 		ft = "lua", -- only load on lua files
