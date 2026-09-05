@@ -33,7 +33,15 @@ require('lazy').setup({
 		build = ":TSUpdate",
 		config = function()
 			require("nvim-treesitter").setup()
+
+			-- 	ensure_installed = { "vimdoc", "javascript", "typescript", "c", "lua", "rust", "python",
+			-- 		"toml", "css", "html", "bash", "astro", "vue",
+			-- 		"go","zig", "qmljs"
+			-- 	},
 			require("nvim-treesitter").install({
+				"vimdoc", "javascript", "typescript", "c", "lua", "rust", "python",
+				"toml", "css", "html", "bash", "astro", "vue",
+				"go", "zig", "qmljs",
 				"lua", "nix", "markdown", "markdown_inline", "bash", "json", "yaml",
 			})
 			vim.api.nvim_create_autocmd("FileType", {
