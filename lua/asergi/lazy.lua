@@ -105,12 +105,6 @@ require('lazy').setup({
 	{ "mbbill/undotree" },
 	{ "tpope/vim-fugitive" },
 
-	--- Uncomment the two plugins below if you want to manage the language servers from neovim
-	{ 'williamboman/mason.nvim' },
-	{ 'williamboman/mason-lspconfig.nvim' },
-	{ 'WhoIsSethDaniel/mason-tool-installer.nvim' },
-
-	{ 'VonHeikemen/lsp-zero.nvim',                branch = 'v3.x' },
 	{ 'neovim/nvim-lspconfig' },
 	-- { 'hrsh7th/cmp-nvim-lsp' },
 	-- { 'hrsh7th/nvim-cmp' },
@@ -212,7 +206,6 @@ require('lazy').setup({
 		dependencies = {
 			"rcarriga/nvim-dap-ui",
 			"nvim-neotest/nvim-nio",
-			"jay-babu/mason-nvim-dap.nvim",
 			"theHamsta/nvim-dap-virtual-text",
 		},
 	},

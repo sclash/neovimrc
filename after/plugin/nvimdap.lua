@@ -1,4 +1,3 @@
-local mason_dap = require("mason-nvim-dap")
 local dap = require("dap")
 local ui = require("dapui")
 local dap_virtual_text = require("nvim-dap-virtual-text")
@@ -6,26 +5,57 @@ local dap_virtual_text = require("nvim-dap-virtual-text")
 -- Dap Virtual Text
 dap_virtual_text.setup()
 
-mason_dap.setup({
-	ensure_installed = { "cppdbg", "python", "codelldb", "js-debug-adapter", "delve", "bash" },
-	automatic_installation = true,
-	handlers = {
-		function(config)
-			require("mason-nvim-dap").default_setup(config)
-		end,
-	},
-})
+-- Debug adapters are nix packages (see nixos/programs/nvim-lsp.nix).
+-- Replaces mason-nvim-dap.
 
+-- codelldb (C/C++/Rust/Zig): shim script exposed on PATH by nixos/programs/nvim-lsp.nix
 dap.adapters.codelldb = {
 	type = 'server',
 	port = '${port}',
 	executable = {
-		-- **CRITICAL: Replace this path with the actual location of your codelldb binary**
-		-- If installed via mason, it's usually one of these:
-		command = vim.fn.stdpath('data') .. '/mason/packages/codelldb/extension/adapter/codelldb',
-		-- OR, if using mason's bin shims:
-		-- command = vim.fn.stdpath('data') .. '/mason/bin/codelldb',
+		command = vim.fn.exepath("codelldb"),
 		args = { '--port', '${port}' },
+	},
+}
+
+-- js-debug (JavaScript): nix vscode-js-debug bin wraps `node .../dapDebugServer.js`
+dap.adapters["js-debug-adapter"] = {
+	type = 'server',
+	host = 'localhost',
+	port = '${port}',
+	executable = {
+		command = "js-debug",
+		args = { '${port}' },
+	},
+}
+
+-- python (debugpy): debugpy-adapter shim runs `python -m debugpy.adapter`
+dap.adapters.python = function(cb, config)
+	if config.request == "attach" then
+		local port = (config.connect or config).port
+		local host = (config.connect or config).host or "127.0.0.1"
+		cb({
+			type = "server",
+			port = assert(port, "`connect.port` is required for a python `attach` configuration"),
+			host = host,
+			options = { source_filetype = "python" },
+		})
+	else
+		cb({
+			type = "executable",
+			command = "debugpy-adapter",
+			options = { source_filetype = "python" },
+		})
+	end
+end
+
+-- delve (Go)
+dap.adapters.delve = {
+	type = 'server',
+	port = '${port}',
+	executable = {
+		command = "dlv",
+		args = { 'dap', '-l', '127.0.0.1:${port}' },
 	},
 }
 

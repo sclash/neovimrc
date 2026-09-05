@@ -1,23 +1,24 @@
 local is_nixos = require("asergi.platform").is_nixos;
-local lsp_zero = require('lsp-zero')
--- local util = require('lspconfig.util')
 
-lsp_zero.on_attach(function(_, bufnr)
-	local opts = { buffer = bufnr, remap = false }
+vim.api.nvim_create_autocmd("LspAttach", {
+	group = vim.api.nvim_create_augroup("asergi-lsp-attach", { clear = true }),
+	callback = function(event)
+		local opts = { buffer = event.buf, remap = false }
 
-	vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
-	vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
-	vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
-	vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
-	-- vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
-	-- vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
-	vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = 1, float = true }) end, opts)
-	vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, opts)
-	vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
-	vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
-	vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
-	vim.keymap.set("n", "<leader>h", function() vim.lsp.buf.signature_help() end, opts)
-end)
+		vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
+		vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
+		vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
+		vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
+		-- vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
+		-- vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
+		vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = 1, float = true }) end, opts)
+		vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, opts)
+		vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
+		vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
+		vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
+		vim.keymap.set("n", "<leader>h", function() vim.lsp.buf.signature_help() end, opts)
+	end,
+})
 
 -- to learn how to use mason.nvim with lsp-zero
 -- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guides/integrate-with-mason-nvim.md
@@ -43,9 +44,6 @@ end)
 -- 		},
 -- 	},
 -- })
-
-local nvim_lsp = require("lspconfig")
-
 
 local clangd_cmd = {
 	"clangd",
@@ -434,48 +432,67 @@ vim.lsp.config("emmet_language_server", {
 -- 	filetypes = { 'html',  'vue' },
 -- }
 
-require('mason').setup({})
-
-require('mason-tool-installer').setup({
-	ensure_installed = {
-		"prettier",
-		"black",
-		-- "debugpy",
-	}
+-- LSP capabilities come from blink.cmp (replaces the lsp-zero / mason-lspconfig wiring)
+vim.lsp.config('*', {
+	capabilities = require('blink.cmp').get_lsp_capabilities(nil, true),
 })
-require('mason-lspconfig').setup({
-	ensure_installed = { 'vtsls', 'vue_ls', 'bashls', 'rust_analyzer', 'pyright', 'html',  'astro','clangd',
-		'lua_ls',
-		'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service', 'zls', 'markdown_oxide',
-		'texlab', 'emmet_language_server', },
-	automatic_enable = {
-		exclude = { "clangd" }
-	},
-	handlers = {
-		lsp_zero.default_setup,
-		lua_ls = function()
-			local lua_opts = lsp_zero.nvim_lua_ls()
-			local capabilities = require("blink.cmp").get_lsp_capabilities()
-			-- require('lspconfig').lua_ls.setup(lua_opts)
-			-- require('lspconfig').lua_ls.setup { options = lua_opts, capabilities = capabilities }
-			vim.lsp.config("lua_ls", { options = lua_opts, capabilities = capabilities })
-		end,
-	},
-}) -- If you are using mason.nvim, you can get the ts_plugin_path like this
--- For Mason v1,
--- local mason_registry = require('mason-registry')
--- local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() .. '/node_modules/@vue/language-server'
--- For Mason v2,
--- local vue_language_server_path = vim.fn.expand '$MASON/packages' .. '/vue-language-server' .. '/node_modules/@vue/language-server'
--- or even
--- local vue_language_server_path = vim.fn.stdpath('data');
--- local vue_language_server_path = vim.fs.dirname(vim.fn.exepath("vue-language-server")) ..
--- "/../lib/language-tools/packages/language-server/node_modules/@vue/typescript-plugin"
-local vue_language_server_path = vim.fn.stdpath('data') ..
-    "/mason/packages/vue-language-server/node_modules/@vue/language-server"
--- IMPORTANT: nvchad users cannot use `$MASON` directly as the option is set to `skip`, see: https://github.com/NvChad/NvChad/blob/29ebe31ea6a4edf351968c76a93285e6e108ea08/lua/nvchad/configs/mason.lua#L4
 
--- local vue_language_server_path = '/path/to/@vue/language-server'
+-- lua_ls: native replacement for lsp_zero.nvim_lua_ls()
+vim.lsp.config('lua_ls', {
+	settings = {
+		Lua = {
+			telemetry = { enable = false },
+			runtime = {
+				version = 'LuaJIT',
+				path = vim.list_extend(vim.split(package.path, ';'), { 'lua/?.lua', 'lua/?/init.lua' }),
+			},
+			diagnostics = { globals = { 'vim' } },
+			workspace = {
+				checkThirdParty = false,
+				library = {
+					vim.fn.expand('$VIMRUNTIME/lua'),
+					vim.fn.stdpath('config') .. '/lua',
+				},
+			},
+		},
+	},
+})
+
+-- Servers previously installed by mason-lspconfig are now nix packages
+-- (see nixos/programs/nvim-lsp.nix). clangd, qmlls, nixd and mojo are
+-- enabled above; vtsls and vue_ls are enabled at the bottom of this file.
+vim.lsp.enable({
+	'bashls', 'rust_analyzer', 'pyright', 'html', 'astro', 'lua_ls',
+	'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service',
+	'zls', 'markdown_oxide', 'texlab', 'emmet_language_server',
+})
+
+-- @vue/typescript-plugin location: resolve it from the nix vue-language-server
+-- package (nix layout: <store>/lib/language-tools/packages/typescript-plugin)
+local function vue_typescript_plugin_path()
+	local exe = vim.fn.exepath('vue-language-server')
+	if exe == '' then return nil end
+	local dir = vim.fs.dirname(vim.uv.fs_realpath(exe) or exe)
+	for _ = 1, 8 do
+		if not dir or dir == '/' or dir == '' then return nil end
+		for _, candidate in ipairs({
+			dir .. '/lib/language-tools/packages/typescript-plugin',
+			dir .. '/packages/typescript-plugin',
+		}) do
+			if vim.uv.fs_stat(candidate) then return candidate end
+		end
+		dir = vim.fs.dirname(dir)
+	end
+	return nil
+end
+
+local vue_language_server_path = vue_typescript_plugin_path()
+if not vue_language_server_path then
+	-- fallback: legacy mason install path (only used while the mason data dir still exists)
+	vue_language_server_path = vim.fn.stdpath('data') ..
+		"/mason/packages/vue-language-server/node_modules/@vue/language-server"
+	vim.notify("vue-language-server not found on PATH: using mason fallback for @vue/typescript-plugin", vim.log.levels.WARN)
+end
 local tsserver_filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', }
 local vue_plugin = {
 	name = '@vue/typescript-plugin',
