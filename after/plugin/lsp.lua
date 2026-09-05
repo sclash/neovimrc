@@ -464,7 +464,7 @@ vim.lsp.config('lua_ls', {
 vim.lsp.enable({
 	'bashls', 'rust_analyzer', 'pyright', 'html', 'astro', 'lua_ls',
 	'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service',
-	'zls', 'markdown_oxide', 'texlab', 'emmet_language_server',
+	'zls', 'markdown_oxide', 'texlab', 'emmet_language_server', 'gopls',
 })
 
 -- @vue/typescript-plugin location: resolve it from the nix vue-language-server
