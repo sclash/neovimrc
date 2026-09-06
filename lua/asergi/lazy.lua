@@ -39,10 +39,10 @@ require('lazy').setup({
 			-- 		"go","zig", "qmljs"
 			-- 	},
 			require("nvim-treesitter").install({
-				"vimdoc", "javascript", "typescript", "c", "lua", "rust", "python",
-				"toml", "css", "html", "bash", "astro", "vue",
-				"go", "zig", "qmljs",
-				"lua", "nix", "markdown", "markdown_inline", "bash", "json", "yaml",
+				"vimdoc", "javascript", "typescript", "c", "lua", "rust", "python", "diff",
+				"toml", "css", "scss", "html", "http", "llvm", "make", "cmake", "nginx","astro", "vue","gitignore",
+				"go", "zig", "qmljs","cpp","cuda", "objdump", "odin", "regex", "xml", "dockerfile",
+				"lua", "nix", "markdown", "markdown_inline", "bash", "json", "yaml", "disassembly"
 			})
 			vim.api.nvim_create_autocmd("FileType", {
 				callback = function(ev)
