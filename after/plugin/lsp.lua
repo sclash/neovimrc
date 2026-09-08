@@ -325,6 +325,10 @@ vim.lsp.enable("mojo")
 vim.lsp.config("emmet_language_server", {
 	filetypes = { "html" },
 })
+vim.lsp.config("nu-lsp", {
+	cmd = {"nu", "--lsp"},
+	filetypes = { "nu" },
+})
 
 -- require("lspconfig").emmet_language_server.setup({
 -- 	filetypes = { "typescript", "javascript", "vue" },
@@ -464,7 +468,7 @@ vim.lsp.config('lua_ls', {
 vim.lsp.enable({
 	'bashls', 'rust_analyzer', 'pyright', 'html', 'astro', 'lua_ls',
 	'tailwindcss', 'jsonls', 'dockerls', 'docker_compose_language_service',
-	'zls', 'markdown_oxide', 'texlab', 'emmet_language_server', 'gopls',
+	'zls', 'markdown_oxide', 'texlab', 'emmet_language_server', 'gopls', 'nu-lsp'
 })
 
 -- @vue/typescript-plugin location: resolve it from the nix vue-language-server
