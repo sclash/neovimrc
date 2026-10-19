@@ -24,6 +24,13 @@ require('lazy').setup({
 	{ 'brenoprata10/nvim-highlight-colors' },
 	{ 'sindrets/diffview.nvim' },
 	{ "lewis6991/gitsigns.nvim" },
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		---@module 'render-markdown'
+		---@type render.md.UserConfig
+		opts = {},
+
+	},
 	-- FUNDAMENTAL
 	-- { "nvim-treesitter/nvim-treesitter",   lazy = false, build = ":TSUpdate" },
 	{
@@ -40,8 +47,9 @@ require('lazy').setup({
 			-- 	},
 			require("nvim-treesitter").install({
 				"vimdoc", "javascript", "typescript", "c", "lua", "rust", "python", "diff",
-				"toml", "css", "scss", "html", "http", "llvm", "make", "cmake", "nginx","astro", "vue","gitignore",
-				"go", "zig", "qmljs","cpp","cuda", "objdump", "odin", "regex", "xml", "dockerfile",
+				"toml", "css", "scss", "html", "http", "llvm", "make", "cmake", "nginx", "astro", "vue",
+				"gitignore",
+				"go", "zig", "qmljs", "cpp", "cuda", "objdump", "odin", "regex", "xml", "dockerfile",
 				"lua", "nix", "markdown", "markdown_inline", "bash", "json", "yaml", "disassembly"
 			})
 			vim.api.nvim_create_autocmd("FileType", {
